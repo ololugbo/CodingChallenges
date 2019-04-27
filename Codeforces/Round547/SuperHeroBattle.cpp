@@ -3,9 +3,11 @@
 #include <limits>
 using namespace std;
 
+long long int h;
+int n;
+
 long long int ceilDivide(long long int dividend, long long int divisor)
 {
-    int error = abs(3);
     long long int quot = abs(dividend) / abs(divisor);
     long long int modQuot = abs(dividend) % abs(divisor);
 
@@ -13,16 +15,17 @@ long long int ceilDivide(long long int dividend, long long int divisor)
     {
         quot += 1;
     }
+
     return quot;
 }
 
-long long int getMaxFullRounds(long long int h, long long int currSum, long long int roundSum)
+long long int getMaxFullRounds(long long int currSum, long long int roundSum)
 {
     long long int rounds = ceilDivide((-1 * h) + abs(currSum), roundSum);
     return rounds;
 }
 
-long long int getFullRoundNeededRes(long long int h, long long int * sums, long long int roundSum, int n)
+long long int getFullRoundNeededRes(long long int * sums, long long int roundSum)
 {
     long long int minRounds = numeric_limits<long long int>::max();
     int minRoundInd = 0;
@@ -30,7 +33,7 @@ long long int getFullRoundNeededRes(long long int h, long long int * sums, long 
     {
         if(sums[i] < 0)
         {
-            long long int currRounds = getMaxFullRounds(h, sums[i], roundSum);
+            long long int currRounds = getMaxFullRounds(sums[i], roundSum);
             if(currRounds < minRounds)
             {
                 minRounds = currRounds;
@@ -44,13 +47,11 @@ long long int getFullRoundNeededRes(long long int h, long long int * sums, long 
 
 int main()
 {
-    long long int h;
-    int n;
+    cin >> h >> n;
+
     int d[n];
     long long int sums[n];
     bool fullRoundNeeded = true;
-
-    cin >> h >> n;
 
     for(int i = 0; i < n; i++)
     {
@@ -58,32 +59,33 @@ int main()
     }
 
     long long int roundSum = 0;
+    int nonFullRoundNeededRes = 0;
 
-    long long int nonFullRoundNeededRes = 0;
     for(int i = 0; i < n; i++)
     {
         roundSum += d[i];
         sums[i] = roundSum;
-        if(sums[i] < (-1 * h))
+        if(sums[i] <= (-1 * h))
         {
             fullRoundNeeded = false;
-            nonFullRoundNeededRes = sums[i];
-        } 
+            nonFullRoundNeededRes = (i + 1);
+            break;
+        }
     }
 
-    if(roundSum >= 0)
+    if(!fullRoundNeeded)
     {
-        cout << -1 << endl;
+        cout << nonFullRoundNeededRes << endl;
     }
     else
     {
-        if(!fullRoundNeeded)
+        if(roundSum >= 0)
         {
-            cout << nonFullRoundNeededRes << endl;
+            cout << -1 << endl;
         }
         else
         {
-            cout << getFullRoundNeededRes(h, sums, roundSum, n) << endl;    
+            cout << getFullRoundNeededRes(sums, roundSum) << endl;
         }
     }
 }
